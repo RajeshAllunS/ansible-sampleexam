@@ -1,0 +1,53 @@
+---
+- name: Create multiple users on target servers using data stored in ansible-vault
+  hosts: all #webserver, dbserver
+  gather_facts: no
+  become: yes
+  vars_files:
+    - vars/user_list.yaml
+    - secret.yaml
+  tasks:
+    - name: Create users in webserver
+      user:
+        name: "{{ item.username }}"
+        uid: "{{ item.uid }}"
+        groups: wheel
+        shell: /bin/bash
+        password: "{{ user_password | password_hash('sha512') }}"
+      when:
+        - item.uid is regex("^1")
+        - inventory_hostname in groups['webserver']
+      with_items: "{{ users }}"
+
+    - name: Set authorized key took from file for users in webserver
+      authorized_key:
+        user: "{{ item.username }}"
+        state: present
+        key: "{{ lookup('file', '/home/osboxes/.ssh/id_rsa.pub') }}"
+      when:
+        - item.uid is regex("^1")
+        - inventory_hostname in groups['webserver']
+      with_items: "{{ users }}"
+
+
+    - name: Create users in dbserver
+      user:
+        name: "{{ item.username }}"
+        uid: "{{ item.uid }}"
+        groups: wheel
+        shell: /bin/bash
+        password: "{{ user_password | password_hash('sha512') }}"
+      when:
+        - item.uid is regex("^2")
+        - inventory_hostname in groups['dbserver']
+      with_items: "{{ users }}"
+
+    - name: Set authorized key took from file for users in dbserver
+      authorized_key:
+        user: "{{ item.username }}"
+        state: present
+        key: "{{ lookup('file', '/home/osboxes/.ssh/id_rsa.pub') }}"
+      when:
+        - item.uid is regex("^2")
+        - inventory_hostname in groups['dbserver']
+      with_items: "{{ users }}"

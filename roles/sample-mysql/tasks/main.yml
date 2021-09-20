@@ -1,0 +1,13 @@
+---
+# tasks file for roles/sample-mysql
+- name: Create a partition
+  import_tasks: "partition.yaml"
+
+- name: Create a filesystem
+  import_tasks: "lvm.yaml"
+
+- name: Add Mysql Yum Repo
+  import_tasks: "yumrepository.yaml"
+
+- name: Install MySQL
+  import_tasks: "dbcreate.yaml"

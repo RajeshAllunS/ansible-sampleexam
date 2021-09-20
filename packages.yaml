@@ -1,0 +1,21 @@
+---
+  - name: Install packages in the target hosts depends on the roles
+    gather_facts: yes
+    become: yes
+    hosts: all
+    tasks:
+      - name: Install packages in proxy host groups servers
+        yum:
+          name:
+            - tcpdump
+            - mailx
+        when: inventory_hostname in groups['proxy']
+      - name: Install packages in database host groups servers
+        yum:
+          name:
+            - lsof
+            - mailx
+        when: inventory_hostname in groups['dbserver']
+
+# Reference:
+# https://stackoverflow.com/questions/31912748/how-to-run-a-particular-task-on-specific-host-in-ansible

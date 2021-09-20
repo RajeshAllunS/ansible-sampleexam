@@ -1,0 +1,26 @@
+---
+  - name: Work with Ansible facts
+    hosts: dbserver
+    gather_facts: yes
+    become: yes
+    tasks:
+      - name: Create custom facts folder
+        file:
+          path: /etc/ansible/facts.d/
+          state: directory
+      - name: create a custom facts file
+        copy:
+          src: custom.fact
+          dest: /etc/ansible/facts.d/
+
+      # - name: Re-read facts after adding custom fact
+      #   ansible.builtin.setup:
+      #     filter: ansible_local
+
+      - name: print custom facts
+        debug:
+          var: ansible_local.custom.sample_exam
+
+# Reference links 
+# https://medium.com/opsops/custom-facts-for-ansible-ade5f78d6d94
+# https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html#facts-d-or-local-facts

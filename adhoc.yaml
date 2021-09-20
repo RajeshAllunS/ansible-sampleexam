@@ -1,0 +1,33 @@
+---
+- name: Create automation user for passwordless auth
+  hosts: db02
+  gather_facts: no
+  become: yes
+  vars:
+     user_name: automation
+     group_name: automation
+  tasks:
+    # Create a automation user on all target servers for password less auth
+    - user:
+        name: "{{ user_name }}"
+
+    # Create .ssh directory in the home directory of the automation user
+    - file:
+        path: /home/automation/.ssh
+        state: directory
+        mode: '0700'
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+
+    # Copy the public key to the home directory of automation user for password less auth
+    - copy:
+        src: /home/osboxes/.ssh/id_rsa.pub
+        dest: /home/automation/.ssh/authorized_keys
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+        mode: '0600'
+
+     # Add automation user to sudoers file
+    - lineinfile:
+        path: /etc/sudoers
+        line: "{{ user_name }} ALL=(ALL) NOPASSWD:ALL"

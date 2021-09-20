@@ -1,0 +1,22 @@
+---
+  - name: Conditional check Playbook
+    become: yes
+    gather_facts: yes
+    hosts: web01
+    tasks:
+      # - name: gather gather_facts
+      #   gather_facts:
+      #   register: facts
+      # - name: debug the gather facts
+      #   debug:
+      #     msg: "{{ ansible_memtotal_mb }}"
+      - sysctl:
+          name: vm.swappiness
+          value: '10'
+          state: present
+        when:  ansible_memtotal_mb  > 2048
+
+      - name: Example using fail and when together
+        debug:
+          msg: Memory is less than 2048
+        when:  ansible_memtotal_mb < 2048

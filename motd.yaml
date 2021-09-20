@@ -1,0 +1,19 @@
+---
+- name: edit MOTD file
+  hosts: webserver, dbserver
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Update MOTD on the respective target servers
+      lineinfile:
+        path: /etc/motd
+        line: "Welcome to {{ group_name }}"
+        #- name: edit MOTD file
+        #hosts: dbserver
+        #gather_facts: no
+        #become: yes
+        #tasks:
+        #- name: edit motd file in webserver group
+        #lineinfile:
+        #path: /etc/motd
+        #line: "Welcome to {{ group_name }}"

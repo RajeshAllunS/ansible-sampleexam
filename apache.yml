@@ -1,0 +1,8 @@
+---
+  - name: Install Apache server using sample-apache roles
+    gather_facts: yes
+    hosts: webserver
+    become: yes
+    tasks:
+      - include_role:
+          name: sample-apache

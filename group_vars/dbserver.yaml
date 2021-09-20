@@ -1,0 +1,2 @@
+group_name: dbserver
+server_role: mysql

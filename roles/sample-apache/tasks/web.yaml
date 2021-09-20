@@ -1,0 +1,45 @@
+---
+- name: Install httpd and dependent packages
+  yum:
+    name:
+      - httpd
+      - mod_ssl
+      - php
+    state: installed
+
+- name: Start Apache Service and enable the service to start at boot
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Open Firewall port 80
+  ansible.posix.firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+
+- name: Open Firewall port 443
+  ansible.posix.firewalld:
+    port: 443/tcp
+    permanent: yes
+    state: enabled
+
+- name: Start firewalld
+  service:
+    name: firewalld
+    state: restarted
+    enabled: yes
+
+- name: Systemd service
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  when: "ansible_service_mgr == 'systemd'"
+  register: service_conf
+
+- name: restart httpd service
+  service:
+    name: httpd
+    state: restarted
+  when: service_conf.changed

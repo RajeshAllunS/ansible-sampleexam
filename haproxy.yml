@@ -1,0 +1,20 @@
+---
+  - name: Install and configure haproxy using roles downloaded from ansible galaxy
+    hosts: proxy
+    become: yes
+    gather_facts: yes
+    tasks:
+      - name: Install haproxy on proxy server
+        import_role:
+          name: geerlingguy.haproxy
+
+      - name: Open Firewall port 80 on haproxy server
+        firewalld:
+          port: 80/tcp
+          permanent: yes
+          state: enabled
+
+      - name: Restart the firewalld service
+        service:
+          name: firewalld
+          state: restarted

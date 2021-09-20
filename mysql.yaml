@@ -1,0 +1,11 @@
+---
+- name: Install MySQL db
+  hosts: dbserver
+  gather_facts: yes
+  become: yes
+  vars_files:
+    - secret.yaml
+  tasks:
+    - name: MySQL deployment role
+      include_role:
+        name: sample-mysql

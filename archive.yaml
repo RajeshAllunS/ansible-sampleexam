@@ -1,0 +1,17 @@
+---
+  - name: Playbook to archive database
+    gather_facts: yes
+    become: yes
+    hosts: dbserver
+    tasks:
+      - name: create file and add some contents
+        lineinfile:
+          path: /mnt/mysql_backups/database_list.txt
+          create: yes
+          state: present
+          line: dev,test,qa,prod.
+
+      - name: archive the filesyste/dir
+        archive:
+          path: /mnt/mysql_backups/database_list.txt
+          dest: /mnt/mysql_backups/archive.gz

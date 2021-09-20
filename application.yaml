@@ -1,0 +1,49 @@
+---
+- name: Playbook to install python web Application
+  hosts: webserver
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Install dependency package
+      yum:
+        name: "{{ item }}"
+        state: installed
+      loop:
+          - python3
+          - git  
+    - name: Install Flask python module
+      pip:
+         name: "{{ item }}"
+      with_items:
+        - click==7.1.2
+        - Flask==1.1.2
+        - gunicorn==20.0.4
+        - itsdangerous==1.1.0
+        - Jinja2==2.11.3
+        - MarkupSafe==1.1.1
+        - Werkzeug==1.0.1
+
+    - name: create a folder for the sample flask app code
+      command: 
+        cmd: mkdir -p /mnt/app
+
+    - name: checkout code to the destination folder
+      git:
+         repo: https://github.com/digitalocean/sample-flask.git
+         dest: /mnt/app
+
+         # - name: set environment
+         #shell: export FLASK_APP=/mnt/app/app.py
+    
+    - name: Start the application
+      shell: "export FLASK_APP=/mnt/app/app.py; nohup /usr/local/bin/flask run --host=0.0.0.0"
+      
+- name: Plabook to install and configure Mysql DB
+  hosts: dbserver
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Install mysql db
+      yum:
+        name: mysql
+        state: installed  

@@ -1,0 +1,20 @@
+---
+- name: create a Volume group using PV /dev/sdb1
+  lvg:
+   vg: vg_database
+   pvs: /dev/sdb1
+- name: create logical volume
+  lvol:
+    lv: lv_mysql
+    vg: vg_database
+    size: 512
+- name: create filesystem
+  filesystem:
+    dev: /dev/vg_database/lv_mysql
+    fstype: xfs
+- name: mount the filesystem created on the primary partition
+  mount:
+    path: /mnt/mysql_backups
+    src: /dev/vg_database/lv_mysql
+    fstype: xfs
+    state: mounted

@@ -1,0 +1,19 @@
+---
+- name: Edit SSHD configuration
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Edit sshd configuration on all hosts
+      blockinfile:
+        path: /etc/ssh/sshd_config
+        block: |
+          X11Forwarding no
+          MaxAuthTries 3
+
+    # Search for banner string in the sshd_config file and replace with required line if exists, else create a new entry
+    - name: Edit sshd config to change banner information
+      lineinfile:
+         path: /etc/ssh/sshd_config
+         regexp: '^Banner'
+         line: Banner /etc/motd

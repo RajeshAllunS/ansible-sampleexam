@@ -1,0 +1,13 @@
+---
+- name: To create cronjob
+  hosts: web01
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: The cron job appends the file /var/log/time.log with the output from the date command.
+      cron:
+        name: "log update"
+        minute: "*/2"
+        hour: "*"
+        job: "date >> /var/log/time.log"
+        user: root

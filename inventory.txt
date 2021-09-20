@@ -1,0 +1,15 @@
+web01.example.com ansible_host=192.168.56.104 ansible_connection=ssh ansible_user=automation
+web02.example.com ansible_host=192.168.56.102 ansible_connection=ssh ansible_user=automation
+db01.example.com ansible_host=192.168.56.103 ansible_connection=ssh ansible_user=automation
+proxy01.example.com ansible_host=192.168.56.105 ansible_connection=ssh ansible_user=automation
+
+
+[webserver]
+web01.example.com
+web02.example.com
+
+[dbserver]
+db01.example.com
+
+[proxy]
+proxy01.example.com

@@ -1,0 +1,41 @@
+---
+- name: Install mysql package
+  yum:
+    name:
+      - mysql-community-server
+      - python3
+    state: installed
+- name: Install python module
+  pip:
+    name:
+      - PyMySQL
+- name: Start mysql service
+  service:
+    name: mysqld
+    state: started
+- name: Get Temp password
+  shell: sudo grep 'temporary password' /var/log/mysqld.log | awk '{print $13}'
+  register: temp_pass
+
+- name: Allow mysql port in firewall
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    state: disabled
+
+- name: Check MySQL exists
+  stat:
+    path: "/etc/my.cnf"
+  register: mysql_conf
+
+- name: Change the initial root password
+  command: mysql --user root --password={{ temp_pass.stdout_lines[0] }} --connect-expired-password --execute="ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ database_password }}';"
+  when: not mysql_conf.stat.exists
+
+- name: Update the mysql configuration vars_file
+  template:
+    src: /home/osboxes/ansible-play/roles/sample-mysql/templates/my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    mode: '0644'
+    backup: yes
